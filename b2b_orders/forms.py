@@ -26,9 +26,48 @@ class CustomUserChangeForm(UserChangeForm):
         fields = ('username', 'email', 'first_name', 'last_name', 'role', 'phone_number', 'is_active', 'is_staff')
 
 
+class AdminQuickUserForm(forms.ModelForm):
+    """
+    نموذج سريع للمشرف العام لإنشاء مطعم أو كافيه جديد مباشرة من لوحة التحكم الشاملة
+    """
+    business_name = forms.CharField(
+        max_length=150,
+        label="الاسم التجاري (اسم المطعم أو الكافيه)",
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'مثال: مشاوي السفير أو مقهى السحاب'})
+    )
+    business_phone = forms.CharField(
+        max_length=30,
+        required=False,
+        label="هاتف المحل / المبيعات",
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '05xxxxxxxx'})
+    )
+    business_address = forms.CharField(
+        max_length=255,
+        required=False,
+        label="العنوان / الفرع",
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'المدينة، الحي، الشارع'})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': '••••••••'}),
+        label="كلمة المرور للحساب"
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'first_name', 'last_name', 'email', 'phone_number', 'role']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'اسم المستخدم للدخول'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الاسم الأول لصاحب المحل'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'اسم العائلة لصاحب المحل'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'owner@example.com'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'رقم الهاتف الشخصي للمالك'}),
+            'role': forms.Select(attrs={'class': 'form-select'}),
+        }
+
+
 class StyledLoginForm(AuthenticationForm):
     """
-    نموذج تسجيل الدخول بتنسيق عصري
+    نموذج تسجيل الدخول بتنسيق عصري وهادئ
     """
     username = forms.CharField(
         widget=forms.TextInput(attrs={
@@ -114,5 +153,4 @@ class MenuItemForm(forms.ModelForm):
 
     def __init__(self, restaurant, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # إظهار فقط التصنيفات التابعة لهذا المطعم
         self.fields['category'].queryset = Category.objects.filter(restaurant=restaurant)

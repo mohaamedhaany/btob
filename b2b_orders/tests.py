@@ -108,6 +108,55 @@ class B2BOrderingSystemTests(TestCase):
         response_rest = self.client.get(reverse('restaurant_dashboard'))
         self.assertEqual(response_rest.status_code, 200)
 
+    def test_admin_portal_dashboard(self):
+        """التحقق من لوحة الإدارة التنفيذية ورؤية المشرف لبيانات الملاك والمطاعم"""
+        self.client.login(username='test_admin', password='password123')
+        response = self.client.get(reverse('admin_portal_dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'لوحة الإدارة التنفيذية')
+        self.assertContains(response, self.restaurant.name)
+        self.assertContains(response, self.cafe.name)
+
+        # Non-superusers cannot access
+        self.client.login(username='test_cafe', password='password123')
+        response = self.client.get(reverse('admin_portal_dashboard'), follow=False)
+        self.assertEqual(response.status_code, 302)
+
+    def test_admin_portal_quick_create_user(self):
+        """التحقق من إنشاء حساب مطعم جديد عبر لوحة الإدارة التنفيذية"""
+        self.client.login(username='test_admin', password='password123')
+        payload = {
+            'create_user': '1',
+            'role': 'RESTAURANT',
+            'business_name': 'مطعم الشام الأصيل',
+            'business_phone': '0559988776',
+            'business_address': 'الرياض',
+            'first_name': 'خالد',
+            'last_name': 'العمري',
+            'phone_number': '0501122334',
+            'username': 'sham_restaurant',
+            'email': 'sham@test.com',
+            'password': 'password123'
+        }
+        response = self.client.post(reverse('admin_portal_dashboard'), data=payload, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        new_user = User.objects.get(username='sham_restaurant')
+        self.assertEqual(new_user.role, 'RESTAURANT')
+        self.assertEqual(new_user.restaurant_profile.name, 'مطعم الشام الأصيل')
+        self.assertEqual(new_user.phone_number, '0501122334')
+        self.assertEqual(new_user.restaurant_profile.phone, '0559988776')
+
+    def test_admin_toggle_restaurant_status(self):
+        """التحقق من إمكانية تغيير حالة المطعم من لوحة المشرف"""
+        self.client.login(username='test_admin', password='password123')
+        initial_status = self.restaurant.is_active
+        response = self.client.post(reverse('admin_toggle_restaurant_status', kwargs={'pk': self.restaurant.id}))
+        self.assertEqual(response.status_code, 302)
+
+        self.restaurant.refresh_from_db()
+        self.assertNotEqual(self.restaurant.is_active, initial_status)
+
     def test_cafe_place_order_api(self):
         """التحقق من إنشاء طلب B2B من الكافيه وحساب الإجمالي وبنود الطلب"""
         self.client.login(username='test_cafe', password='password123')

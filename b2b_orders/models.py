@@ -379,13 +379,13 @@ class Order(models.Model):
     @property
     def status_badge_class(self):
         mapping = {
-            'PENDING': 'bg-warning text-dark',
-            'ACCEPTED': 'bg-primary text-white',
-            'READY': 'bg-info text-dark',
-            'COMPLETED': 'bg-success text-white',
-            'CANCELLED': 'bg-danger text-white',
+            'PENDING': 'bg-warning-subtle text-warning border border-warning-subtle',
+            'ACCEPTED': 'bg-primary-subtle text-primary border border-primary-subtle',
+            'READY': 'bg-info-subtle text-info border border-info-subtle',
+            'COMPLETED': 'bg-success-subtle text-success border border-success-subtle',
+            'CANCELLED': 'bg-danger-subtle text-danger border border-danger-subtle',
         }
-        return mapping.get(self.status, 'bg-secondary text-white')
+        return mapping.get(self.status, 'bg-light text-muted border')
 
     @property
     def status_display_ar(self):

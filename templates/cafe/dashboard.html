@@ -4,96 +4,96 @@
 
 {% block content %}
 <div class="container py-2">
-    <!-- Hero / Welcome Banner -->
-    <div class="card border-0 bg-primary text-white p-4 p-md-5 mb-4 shadow-sm" style="border-radius: 18px; background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <span class="badge bg-white text-primary fw-bold px-3 py-2 rounded-pill mb-2">
-                    <i class="bi bi-cup-hot-fill me-1"></i> بوابة طلبات الكافيه B2B
-                </span>
-                <h1 class="fw-black mb-2" style="font-weight: 800;">مرحباً، {{ cafe.name }}</h1>
-                <p class="lead mb-0 text-white-50" style="font-size: 1.1rem;">
-                    اطلب أشهى الوجبات والمشروبات مباشرة من المطاعم الشريكة لزبائنك بأعلى سرعة وأسعار حصرية.
-                </p>
-            </div>
-            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-                <a href="{% url 'cafe_orders_history' %}" class="btn btn-light fw-bold px-4 py-2.5 shadow-sm text-primary">
-                    <i class="bi bi-clock-history me-1"></i> تتبع طلباتي السابقة
-                    {% if active_orders_count > 0 %}
-                        <span class="badge bg-danger text-white ms-1">{{ active_orders_count }} جارية</span>
-                    {% endif %}
-                </a>
+    <!-- Clean, Light & Calming Header Banner -->
+    <div class="card border-0 shadow-sm mb-4 bg-white">
+        <div class="card-body p-4 p-md-4">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1.5 small fw-semibold mb-2">
+                        <i class="bi bi-cup-hot me-1"></i> بوابة طلبات الكافيه B2B
+                    </span>
+                    <h2 class="fw-bold mb-1 text-dark">مرحباً بك، {{ cafe.name }}</h2>
+                    <p class="text-muted small mb-0">
+                        اطلب الوجبات والمشروبات الطازجة مباشرة لزبائنك من شبكة المطاعم الشريكة بكل سهولة وسرعة.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <a href="{% url 'cafe_orders_history' %}" class="btn btn-light border text-primary fw-semibold px-3.5 py-2">
+                        <i class="bi bi-clock-history me-1"></i> سجل طلباتي السابقة
+                        {% if active_orders_count > 0 %}
+                            <span class="badge bg-danger rounded-pill text-white ms-1">{{ active_orders_count }} جارية</span>
+                        {% endif %}
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Search and Controls Bar -->
-    <div class="card shadow-sm border-0 mb-4 p-3">
-        <form method="get" class="row g-3 align-items-center">
-            <div class="col-md-8 col-lg-9">
+    <!-- Search Bar -->
+    <div class="card shadow-sm border-0 mb-4 p-2.5 bg-white">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-9 col-lg-9">
                 <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0">
-                        <i class="bi bi-search text-muted"></i>
+                    <span class="input-group-text bg-white border-end-0 text-muted">
+                        <i class="bi bi-search"></i>
                     </span>
-                    <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-lg border-start-0 fs-6" placeholder="ابحث باسم المطعم، التخصص، أو الحي...">
-                    <button class="btn btn-primary px-4 fw-bold" type="submit">بحث</button>
+                    <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 fs-6" placeholder="ابحث باسم المطعم، نوع المأكولات، أو العنوان...">
+                    <button class="btn btn-primary px-4 fw-semibold" type="submit">بحث</button>
                 </div>
             </div>
-            <div class="col-md-4 col-lg-3 text-md-end">
-                <span class="text-muted small">
-                    إجمالي المطاعم النشطة: <strong>{{ restaurants.count }}</strong>
-                </span>
+            <div class="col-md-3 col-lg-3 text-md-end text-muted small pe-md-3">
+                المطاعم المتاحة: <strong>{{ restaurants.count }}</strong>
             </div>
         </form>
     </div>
 
-    <!-- Restaurant Grid (B2B Directory) -->
-    <div class="row g-4">
+    <!-- Restaurant Grid -->
+    <div class="row g-3.5">
         {% if restaurants %}
             {% for restaurant in restaurants %}
                 <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm border-0 overflow-hidden hover-card">
-                        <!-- Cover / Banner -->
-                        <div style="height: 120px; background: {% if restaurant.cover_image %}url('{{ restaurant.cover_image.url }}') center/cover{% else %}linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%){% endif %}; position: relative;">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-3 shadow-sm px-2.5 py-1.5 rounded-pill">
-                                <i class="bi bi-check-circle-fill me-1"></i> يستقبل طلبات
+                    <div class="card h-100 shadow-sm border bg-white hover-card overflow-hidden">
+                        <!-- Cover / Top Area -->
+                        <div style="height: 100px; background: {% if restaurant.cover_image %}url('{{ restaurant.cover_image.url }}') center/cover{% else %}#f1f5f9{% endif %}; position: relative;">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle position-absolute top-0 end-0 m-2.5 px-2.5 py-1 rounded-pill small">
+                                <i class="bi bi-dot"></i> متاح للطلب
                             </span>
                         </div>
 
                         <!-- Card Body with Overlapping Logo -->
-                        <div class="card-body p-4 pt-0 position-relative">
-                            <div class="d-flex justify-content-between align-items-end mb-3" style="margin-top: -45px;">
+                        <div class="card-body p-3.5 pt-0 position-relative">
+                            <div class="d-flex justify-content-between align-items-end mb-2.5" style="margin-top: -36px;">
                                 {% if restaurant.logo %}
-                                    <img src="{{ restaurant.logo.url }}" alt="{{ restaurant.name }}" class="rounded-circle border border-3 border-white shadow bg-white" style="width: 85px; height: 85px; object-fit: cover;">
+                                    <img src="{{ restaurant.logo.url }}" alt="{{ restaurant.name }}" class="rounded-circle border border-2 border-white shadow-sm bg-white" style="width: 70px; height: 70px; object-fit: cover;">
                                 {% else %}
-                                    <div class="rounded-circle border border-3 border-white shadow bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 85px; height: 85px;">
-                                        <i class="bi bi-shop fs-1"></i>
+                                    <div class="rounded-circle border border-2 border-white shadow-sm bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                                        <i class="bi bi-shop fs-3"></i>
                                     </div>
                                 {% endif %}
 
-                                <span class="badge bg-primary-subtle text-primary border px-2.5 py-1.5 rounded-pill small fw-bold">
-                                    <i class="bi bi-card-checklist me-1"></i> {{ restaurant.items_count }} صنف متاح
+                                <span class="badge bg-light text-muted border px-2.5 py-1 rounded-pill small">
+                                    <i class="bi bi-card-checklist me-1 text-primary"></i> {{ restaurant.items_count }} صنف متاح
                                 </span>
                             </div>
 
-                            <h4 class="fw-bold mb-1 text-dark">{{ restaurant.name }}</h4>
-                            <p class="text-muted small mb-3 text-truncate-2" style="min-height: 40px;">
-                                {{ restaurant.description|default:"مطعم شريك يقدم مجموعة مميزة من الأصناف الطازجة." }}
+                            <h5 class="fw-bold mb-1 text-dark">{{ restaurant.name }}</h5>
+                            <p class="text-muted small mb-3 text-truncate-2" style="min-height: 38px;">
+                                {{ restaurant.description|default:"مطعم شريك يقدم مجموعة مميزة من الأصناف والوجبات الطازجة." }}
                             </p>
 
-                            <div class="d-flex flex-column gap-1 text-muted small mb-4">
+                            <div class="d-flex flex-column gap-1 text-muted small mb-3">
                                 <div>
-                                    <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ restaurant.address|default:"الفرع الرئيسي" }}
+                                    <i class="bi bi-geo-alt text-danger me-1"></i> {{ restaurant.address|default:"الفرع الرئيسي" }}
                                 </div>
                                 {% if restaurant.phone %}
                                     <div>
-                                        <i class="bi bi-telephone-fill text-success me-1"></i> {{ restaurant.phone }}
+                                        <i class="bi bi-telephone text-success me-1"></i> {{ restaurant.phone }}
                                     </div>
                                 {% endif %}
                             </div>
 
-                            <a href="{% url 'cafe_restaurant_menu' restaurant.id %}" class="btn btn-primary w-100 py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
-                                <span>تصفح قائمة الطعام والطلب</span>
+                            <a href="{% url 'cafe_restaurant_menu' restaurant.id %}" class="btn btn-outline-primary w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2">
+                                <span>عرض القائمة والطلب</span>
                                 <i class="bi bi-arrow-left"></i>
                             </a>
                         </div>
@@ -102,13 +102,13 @@
             {% endfor %}
         {% else %}
             <div class="col-12">
-                <div class="card border-0 shadow-sm py-5 text-center">
+                <div class="card border shadow-sm py-5 text-center bg-white">
                     <div class="card-body">
-                        <i class="bi bi-shop-window fs-1 text-muted"></i>
-                        <h4 class="fw-bold mt-3">لم يتم العثور على أي مطاعم</h4>
-                        <p class="text-muted">تأكد من كتابة الاسم بشكل صحيح أو تواصل مع إدارة النظام لإضافة مطاعم جديدة.</p>
+                        <i class="bi bi-shop fs-1 text-muted"></i>
+                        <h5 class="fw-bold mt-3">لم يتم العثور على أي مطاعم</h5>
+                        <p class="text-muted small">تأكد من كتابة الاسم بشكل صحيح أو تواصل مع إدارة النظام لإضافة مطاعم جديدة.</p>
                         {% if search_query %}
-                            <a href="{% url 'cafe_dashboard' %}" class="btn btn-outline-primary btn-sm px-4">
+                            <a href="{% url 'cafe_dashboard' %}" class="btn btn-light border btn-sm px-3 mt-1">
                                 إلغاء البحث وعرض الكل
                             </a>
                         {% endif %}
@@ -122,13 +122,6 @@
 
 {% block extra_css %}
 <style>
-    .hover-card {
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-    .hover-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
-    }
     .text-truncate-2 {
         display: -webkit-box;
         -webkit-line-clamp: 2;

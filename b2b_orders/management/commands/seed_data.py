@@ -36,15 +36,21 @@ class Command(BaseCommand):
         rest1_user, created = User.objects.get_or_create(
             username='mashawi_chef',
             defaults={
-                'email': 'grill@foodb2b.com',
-                'first_name': 'مطعم',
-                'last_name': 'قصر المشويات',
+                'email': 'ahmed.grill@foodb2b.com',
+                'first_name': 'أحمد',
+                'last_name': 'الغامدي (صاحب مطعم قصر المشويات)',
                 'role': 'RESTAURANT',
-                'phone_number': '0551122334',
+                'phone_number': '0501122334',
             }
         )
         if created:
             rest1_user.set_password('rest123456')
+            rest1_user.save()
+        else:
+            rest1_user.first_name = 'أحمد'
+            rest1_user.last_name = 'الغامدي'
+            rest1_user.phone_number = '0501122334'
+            rest1_user.email = 'ahmed.grill@foodb2b.com'
             rest1_user.save()
 
         rest1_profile = rest1_user.restaurant_profile
@@ -99,15 +105,21 @@ class Command(BaseCommand):
         rest2_user, created = User.objects.get_or_create(
             username='burger_house',
             defaults={
-                'email': 'burger@foodb2b.com',
-                'first_name': 'مطعم',
-                'last_name': 'برجر هاوس',
+                'email': 'sultan.burger@foodb2b.com',
+                'first_name': 'سلطان',
+                'last_name': 'الشمري',
                 'role': 'RESTAURANT',
-                'phone_number': '0569988776',
+                'phone_number': '0509988776',
             }
         )
         if created:
             rest2_user.set_password('rest123456')
+            rest2_user.save()
+        else:
+            rest2_user.first_name = 'سلطان'
+            rest2_user.last_name = 'الشمري'
+            rest2_user.phone_number = '0509988776'
+            rest2_user.email = 'sultan.burger@foodb2b.com'
             rest2_user.save()
 
         rest2_profile = rest2_user.restaurant_profile
@@ -155,15 +167,20 @@ class Command(BaseCommand):
         cafe1_user, created = User.objects.get_or_create(
             username='aroma_cafe',
             defaults={
-                'email': 'aroma@cafe.com',
-                'first_name': 'مقهى',
-                'last_name': 'أروما لاونج',
+                'email': 'abdullah.aroma@cafe.com',
+                'first_name': 'عبدالله',
+                'last_name': 'الدوسري',
                 'role': 'CAFE',
                 'phone_number': '0541234567',
             }
         )
         if created:
             cafe1_user.set_password('cafe123456')
+            cafe1_user.save()
+        else:
+            cafe1_user.first_name = 'عبدالله'
+            cafe1_user.last_name = 'الدوسري'
+            cafe1_user.phone_number = '0541234567'
             cafe1_user.save()
 
         cafe1_profile = cafe1_user.cafe_profile
@@ -176,15 +193,20 @@ class Command(BaseCommand):
         cafe2_user, created = User.objects.get_or_create(
             username='friends_cafe',
             defaults={
-                'email': 'friends@cafe.com',
-                'first_name': 'مقهى ومحمص',
-                'last_name': 'الأصدقاء',
+                'email': 'faisal.friends@cafe.com',
+                'first_name': 'فيصل',
+                'last_name': 'القحطاني',
                 'role': 'CAFE',
                 'phone_number': '0597654321',
             }
         )
         if created:
             cafe2_user.set_password('cafe123456')
+            cafe2_user.save()
+        else:
+            cafe2_user.first_name = 'فيصل'
+            cafe2_user.last_name = 'القحطاني'
+            cafe2_user.phone_number = '0597654321'
             cafe2_user.save()
 
         cafe2_profile = cafe2_user.cafe_profile

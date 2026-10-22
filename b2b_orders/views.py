@@ -24,7 +24,8 @@ from .forms import (
     RestaurantProfileForm,
     CafeProfileForm,
     CategoryForm,
-    MenuItemForm
+    MenuItemForm,
+    AdminQuickUserForm
 )
 from .decorators import restaurant_required, cafe_required
 
@@ -62,12 +63,7 @@ def dashboard_redirect(request):
     """
     user = request.user
     if user.is_superuser:
-        if user.role == 'RESTAURANT':
-            return redirect('restaurant_dashboard')
-        elif user.role == 'CAFE':
-            return redirect('cafe_dashboard')
-        # إذا كان مشرفاً عاماً بدون تحديد، نوجهه إلى لوحة الكافيه كبوابة استعراض أو لوحة الأدمن
-        return redirect('cafe_dashboard')
+        return redirect('admin_portal_dashboard')
     elif user.role == 'RESTAURANT':
         return redirect('restaurant_dashboard')
     elif user.role == 'CAFE':
@@ -580,3 +576,105 @@ def cafe_order_detail(request, pk):
         'cafe': cafe,
         'order': order,
     })
+
+
+# ==============================================================================
+# Admin Portal Views (لوحة تحكم المشرف العام الحصرية)
+# ==============================================================================
+
+@login_required(login_url='login')
+def admin_portal_dashboard(request):
+    """
+    لوحة تحكم المشرف العام: رؤية كاملة لجميع المطاعم، أصحابها، أرقام هواتفهم، والكافيهات والطلبات
+    """
+    if not request.user.is_superuser:
+        messages.error(request, 'هذه اللوحة مخصصة لإدارة النظام فقط.')
+        return redirect('dashboard_redirect')
+
+    if request.method == 'POST' and 'create_user' in request.POST:
+        user_form = AdminQuickUserForm(request.POST)
+        if user_form.is_valid():
+            new_user = user_form.save(commit=False)
+            new_user.set_password(user_form.cleaned_data['password'])
+            new_user.save()
+
+            b_name = user_form.cleaned_data.get('business_name')
+            b_phone = user_form.cleaned_data.get('business_phone')
+            b_address = user_form.cleaned_data.get('business_address')
+
+            if new_user.role == 'RESTAURANT':
+                profile = new_user.get_or_create_restaurant_profile()
+                profile.name = b_name
+                profile.phone = b_phone
+                profile.address = b_address
+                profile.save()
+            elif new_user.role == 'CAFE':
+                profile = new_user.get_or_create_cafe_profile()
+                profile.name = b_name
+                profile.phone = b_phone
+                profile.address = b_address
+                profile.save()
+
+            messages.success(request, f'تم إنشاء حساب "{new_user.username}" بنجاح للنشاط "{b_name}"!')
+            return redirect('admin_portal_dashboard')
+        else:
+            messages.error(request, 'يرجى تصحيح أخطاء النموذج أسفله.')
+    else:
+        user_form = AdminQuickUserForm(initial={'role': 'RESTAURANT'})
+
+    # 1. إحصائيات المنظومة
+    total_restaurants = RestaurantProfile.objects.count()
+    active_restaurants = RestaurantProfile.objects.filter(is_active=True).count()
+    total_cafes = CafeProfile.objects.count()
+    total_orders = Order.objects.count()
+    completed_orders = Order.objects.filter(status='COMPLETED').count()
+    total_volume = Order.objects.filter(status='COMPLETED').aggregate(total=Sum('total_price'))['total'] or Decimal('0.00')
+
+    # 2. تفاصيل شاملة لجميع المطاعم وأصحابها
+    restaurants = RestaurantProfile.objects.select_related('user').annotate(
+        items_count=Count('menu_items', distinct=True),
+        orders_count=Count('orders_received', distinct=True),
+        revenue=Sum('orders_received__total_price', filter=Q(orders_received__status='COMPLETED'))
+    ).order_by('-created_at')
+
+    # 3. تفاصيل شاملة لجميع الكافيهات وأصحابها
+    cafes = CafeProfile.objects.select_related('user').annotate(
+        orders_count=Count('orders_placed', distinct=True),
+        total_spent=Sum('orders_placed__total_price', filter=Q(orders_placed__status='COMPLETED'))
+    ).order_by('-created_at')
+
+    # 4. مراقبة حركة الطلبات اللحظية بالكامل
+    recent_orders = Order.objects.select_related('cafe', 'cafe__user', 'restaurant', 'restaurant__user').prefetch_related('items').order_by('-created_at')[:30]
+
+    context = {
+        'total_restaurants': total_restaurants,
+        'active_restaurants': active_restaurants,
+        'total_cafes': total_cafes,
+        'total_orders': total_orders,
+        'completed_orders': completed_orders,
+        'total_volume': total_volume,
+        'restaurants': restaurants,
+        'cafes': cafes,
+        'recent_orders': recent_orders,
+        'user_form': user_form,
+    }
+    return render(request, 'admin_portal/dashboard.html', context)
+
+
+@login_required(login_url='login')
+@require_POST
+def admin_toggle_restaurant_status(request, pk):
+    """
+    تفعيل أو تعطيل مطعم بواسطة المشرف العام بضغطة زر
+    """
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
+
+    restaurant = get_object_or_404(RestaurantProfile, pk=pk)
+    restaurant.is_active = not restaurant.is_active
+    restaurant.save(update_fields=['is_active'])
+
+    status_str = "تفعيل" if restaurant.is_active else "تعطيل مؤقت لـ"
+    messages.success(request, f'تم {status_str} المطعم "{restaurant.name}".')
+    return redirect('admin_portal_dashboard')
+

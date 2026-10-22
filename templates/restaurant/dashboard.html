@@ -45,13 +45,13 @@
     <!-- Quick Stats Cards -->
     <div class="row g-3 mb-4">
         <div class="col-sm-6 col-lg-3">
-            <div class="card p-3 border-0 shadow-sm bg-warning-subtle text-warning-emphasis">
+            <div class="card p-3 border shadow-sm bg-white">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="small fw-bold text-uppercase">طلبات قيد الانتظار</div>
-                        <h2 class="fw-bold mb-0 mt-1">{{ pending_orders_count }}</h2>
+                        <div class="small text-muted fw-semibold">طلبات قيد الانتظار</div>
+                        <h3 class="fw-bold text-dark mb-0 mt-1">{{ pending_orders_count }}</h3>
                     </div>
-                    <div class="bg-warning text-dark p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                    <div class="bg-warning-subtle text-warning p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
                         <i class="bi bi-hourglass-split fs-4"></i>
                     </div>
                 </div>
@@ -59,13 +59,13 @@
         </div>
 
         <div class="col-sm-6 col-lg-3">
-            <div class="card p-3 border-0 shadow-sm bg-primary-subtle text-primary-emphasis">
+            <div class="card p-3 border shadow-sm bg-white">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="small fw-bold text-uppercase">قيد التحضير والتجهيز</div>
-                        <h2 class="fw-bold mb-0 mt-1">{{ in_progress_count }}</h2>
+                        <div class="small text-muted fw-semibold">قيد التحضير والتجهيز</div>
+                        <h3 class="fw-bold text-dark mb-0 mt-1">{{ in_progress_count }}</h3>
                     </div>
-                    <div class="bg-primary text-white p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                    <div class="bg-primary-subtle text-primary p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
                         <i class="bi bi-fire fs-4"></i>
                     </div>
                 </div>
@@ -73,13 +73,13 @@
         </div>
 
         <div class="col-sm-6 col-lg-3">
-            <div class="card p-3 border-0 shadow-sm bg-success-subtle text-success-emphasis">
+            <div class="card p-3 border shadow-sm bg-white">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="small fw-bold text-uppercase">الطلبات المكتملة اليوم</div>
-                        <h2 class="fw-bold mb-0 mt-1">{{ completed_today_count }}</h2>
+                        <div class="small text-muted fw-semibold">الطلبات المكتملة اليوم</div>
+                        <h3 class="fw-bold text-dark mb-0 mt-1">{{ completed_today_count }}</h3>
                     </div>
-                    <div class="bg-success text-white p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                    <div class="bg-success-subtle text-success p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
                         <i class="bi bi-check2-all fs-4"></i>
                     </div>
                 </div>
@@ -87,13 +87,13 @@
         </div>
 
         <div class="col-sm-6 col-lg-3">
-            <div class="card p-3 border-0 shadow-sm bg-secondary-subtle text-secondary-emphasis">
+            <div class="card p-3 border shadow-sm bg-white">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="small fw-bold text-uppercase">مبيعات اليوم التقديرية</div>
-                        <h2 class="fw-bold mb-0 mt-1">{{ today_revenue }} <small class="fs-6">ر.س</small></h2>
+                        <div class="small text-muted fw-semibold">مبيعات اليوم التقديرية</div>
+                        <h3 class="fw-bold text-success mb-0 mt-1">{{ today_revenue }} <small class="fs-6 text-muted">ر.س</small></h3>
                     </div>
-                    <div class="bg-dark text-white p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                    <div class="bg-info-subtle text-info p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
                         <i class="bi bi-cash-stack fs-4"></i>
                     </div>
                 </div>

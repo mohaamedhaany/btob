@@ -8,6 +8,10 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('redirect/', views.dashboard_redirect, name='dashboard_redirect'),
 
+    # لوحة تحكم المشرف العام (Admin Executive Portal)
+    path('admin-portal/', views.admin_portal_dashboard, name='admin_portal_dashboard'),
+    path('admin-portal/restaurant/<int:pk>/toggle/', views.admin_toggle_restaurant_status, name='admin_toggle_restaurant_status'),
+
     # واجهات وصلاحيات المطعم (Restaurant Portal)
     path('restaurant/dashboard/', views.restaurant_dashboard, name='restaurant_dashboard'),
     path('restaurant/profile/', views.restaurant_profile_view, name='restaurant_profile'),

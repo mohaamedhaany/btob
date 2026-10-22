@@ -45,26 +45,26 @@
     </div>
 
     <!-- Filter Tabs -->
-    <div class="card shadow-sm border-0 mb-4">
+    <div class="card shadow-sm border-0 mb-4 bg-white">
         <div class="card-body p-2">
-            <div class="nav nav-pills nav-fill gap-2" id="orderStatusTabs">
-                <a href="{% url 'restaurant_orders' %}?status=ALL" class="nav-link py-2.5 {% if status_filter == 'ALL' %}active bg-dark text-white fw-bold{% else %}text-muted{% endif %}">
-                    الكل <span class="badge bg-secondary ms-1">{{ counts.ALL }}</span>
+            <div class="nav nav-pills nav-fill gap-1.5" id="orderStatusTabs">
+                <a href="{% url 'restaurant_orders' %}?status=ALL" class="nav-link py-2 {% if status_filter == 'ALL' %}active bg-primary text-white fw-semibold{% else %}text-muted{% endif %}">
+                    الكل <span class="badge bg-light text-dark ms-1">{{ counts.ALL }}</span>
                 </a>
-                <a href="{% url 'restaurant_orders' %}?status=PENDING" class="nav-link py-2.5 {% if status_filter == 'PENDING' %}active bg-warning text-dark fw-bold{% else %}text-muted{% endif %}">
+                <a href="{% url 'restaurant_orders' %}?status=PENDING" class="nav-link py-2 {% if status_filter == 'PENDING' %}active bg-warning-subtle text-warning-emphasis fw-semibold border border-warning-subtle{% else %}text-muted{% endif %}">
                     <i class="bi bi-hourglass-split me-1"></i> قيد الانتظار <span class="badge bg-warning-subtle text-dark border ms-1">{{ counts.PENDING }}</span>
                 </a>
-                <a href="{% url 'restaurant_orders' %}?status=ACCEPTED" class="nav-link py-2.5 {% if status_filter == 'ACCEPTED' %}active bg-primary text-white fw-bold{% else %}text-muted{% endif %}">
-                    <i class="bi bi-fire me-1"></i> قيد التحضير <span class="badge bg-primary-subtle text-primary ms-1">{{ counts.ACCEPTED }}</span>
+                <a href="{% url 'restaurant_orders' %}?status=ACCEPTED" class="nav-link py-2 {% if status_filter == 'ACCEPTED' %}active bg-primary text-white fw-semibold{% else %}text-muted{% endif %}">
+                    <i class="bi bi-fire me-1"></i> قيد التحضير <span class="badge bg-light text-dark ms-1">{{ counts.ACCEPTED }}</span>
                 </a>
-                <a href="{% url 'restaurant_orders' %}?status=READY" class="nav-link py-2.5 {% if status_filter == 'READY' %}active bg-info text-dark fw-bold{% else %}text-muted{% endif %}">
-                    <i class="bi bi-box-seam me-1"></i> جاهز للتسليم <span class="badge bg-info-subtle text-info-emphasis ms-1">{{ counts.READY }}</span>
+                <a href="{% url 'restaurant_orders' %}?status=READY" class="nav-link py-2 {% if status_filter == 'READY' %}active bg-info text-dark fw-semibold{% else %}text-muted{% endif %}">
+                    <i class="bi bi-box-seam me-1"></i> جاهز للتسليم <span class="badge bg-light text-dark ms-1">{{ counts.READY }}</span>
                 </a>
-                <a href="{% url 'restaurant_orders' %}?status=COMPLETED" class="nav-link py-2.5 {% if status_filter == 'COMPLETED' %}active bg-success text-white fw-bold{% else %}text-muted{% endif %}">
-                    <i class="bi bi-check2-circle me-1"></i> مكتمل ومسلّم <span class="badge bg-success-subtle text-success ms-1">{{ counts.COMPLETED }}</span>
+                <a href="{% url 'restaurant_orders' %}?status=COMPLETED" class="nav-link py-2 {% if status_filter == 'COMPLETED' %}active bg-success text-white fw-semibold{% else %}text-muted{% endif %}">
+                    <i class="bi bi-check2-circle me-1"></i> مكتمل ومسلّم <span class="badge bg-light text-dark ms-1">{{ counts.COMPLETED }}</span>
                 </a>
-                <a href="{% url 'restaurant_orders' %}?status=CANCELLED" class="nav-link py-2.5 {% if status_filter == 'CANCELLED' %}active bg-danger text-white fw-bold{% else %}text-muted{% endif %}">
-                    <i class="bi bi-x-circle me-1"></i> ملغي <span class="badge bg-danger-subtle text-danger ms-1">{{ counts.CANCELLED }}</span>
+                <a href="{% url 'restaurant_orders' %}?status=CANCELLED" class="nav-link py-2 {% if status_filter == 'CANCELLED' %}active bg-danger text-white fw-semibold{% else %}text-muted{% endif %}">
+                    <i class="bi bi-x-circle me-1"></i> ملغي <span class="badge bg-light text-dark ms-1">{{ counts.CANCELLED }}</span>
                 </a>
             </div>
         </div>
@@ -72,10 +72,10 @@
 
     <!-- Orders Grid -->
     {% if orders %}
-        <div class="row g-4" id="ordersContainer">
+        <div class="row g-3.5" id="ordersContainer">
             {% for order in orders %}
                 <div class="col-md-6 col-xl-4" id="order-card-{{ order.id }}">
-                    <div class="card h-100 shadow-sm border {% if order.status == 'PENDING' %}border-warning border-2{% elif order.status == 'ACCEPTED' %}border-primary border-2{% endif %}">
+                    <div class="card h-100 shadow-sm border bg-white">
                         <!-- Card Header -->
                         <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
                             <div>

@@ -54,12 +54,12 @@
             <!-- Category Pills Filter -->
             <div class="card shadow-sm border-0 mb-4 p-3 bg-white">
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                    <span class="text-muted small fw-bold me-1">التصنيفات:</span>
-                    <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 category-filter active" data-category="ALL">
+                    <span class="text-muted small fw-semibold me-1">التصنيفات:</span>
+                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3.5 category-filter active" data-category="ALL">
                         الكل ({{ items.count }})
                     </button>
                     {% for cat in categories %}
-                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 category-filter" data-category="{{ cat.id }}">
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill px-3.5 category-filter" data-category="{{ cat.id }}">
                             <i class="bi {{ cat.icon|default:'bi-tag' }} me-1"></i> {{ cat.name }} ({{ cat.items.count }})
                         </button>
                     {% endfor %}
@@ -268,11 +268,11 @@
     categoryBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             categoryBtns.forEach(b => {
-                b.classList.remove('btn-dark', 'active');
-                b.classList.add('btn-outline-secondary');
+                b.classList.remove('btn-primary', 'active');
+                b.classList.add('btn-light', 'border');
             });
-            this.classList.remove('btn-outline-secondary');
-            this.classList.add('btn-dark', 'active');
+            this.classList.remove('btn-light', 'border');
+            this.classList.add('btn-primary', 'active');
 
             const selectedCat = this.getAttribute('data-category');
             itemCards.forEach(card => {
