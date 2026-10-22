@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}إعداد الملف التعريفي والشعار - {{ restaurant.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h4 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-shop text-primary me-2"></i> إعداد بيانات المطعم والشعار
+                    </h4>
+                    <p class="text-muted small mb-0 mt-1">
+                        هذه البيانات وشعار المطعم هي ما يظهر للكافيهات عند تصفح شبكة المطاعم المتاحة.
+                    </p>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Logo Section -->
+                        <div class="row align-items-center mb-4 p-3 bg-light rounded-3 border">
+                            <div class="col-md-3 text-center mb-3 mb-md-0">
+                                {% if restaurant.logo %}
+                                    <img src="{{ restaurant.logo.url }}" id="logoPreview" alt="{{ restaurant.name }}" class="rounded-circle shadow-sm border" style="width: 100px; height: 100px; object-fit: cover;">
+                                {% else %}
+                                    <div id="logoPreviewPlaceholder" class="rounded-circle bg-white text-muted border shadow-sm d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                        <i class="bi bi-image fs-1"></i>
+                                    </div>
+                                    <img id="logoPreview" src="" alt="Preview" class="rounded-circle shadow-sm border d-none" style="width: 100px; height: 100px; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-9">
+                                <label for="id_logo" class="form-label fw-bold">شعار المطعم (Logo)</label>
+                                {{ form.logo }}
+                                <div class="form-text small text-muted">يفضل صورة مربعة PNG أو JPG بدقة جيدة وحجم لا يتجاوز 2 ميجابايت.</div>
+                                {% if form.logo.errors %}
+                                    <div class="text-danger small">{{ form.logo.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Basic Information -->
+                        <div class="mb-3">
+                            <label for="id_name" class="form-label fw-bold">اسم المطعم التجاري <span class="text-danger">*</span></label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label fw-bold">نبذة عن تخصص المطعم وقائمته</label>
+                            {{ form.description }}
+                            <div class="form-text small text-muted">مثال: متخصصون في المشويات الطازجة والسندوتشات السريعة بجودة عالية.</div>
+                            {% if form.description.errors %}
+                                <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="id_phone" class="form-label fw-bold">رقم هاتف المبيعات / الاستلام</label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                    <div class="text-danger small">{{ form.phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_address" class="form-label fw-bold">العنوان أو الحي</label>
+                                {{ form.address }}
+                                {% if form.address.errors %}
+                                    <div class="text-danger small">{{ form.address.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Cover Image -->
+                        <div class="mb-4">
+                            <label for="id_cover_image" class="form-label fw-bold">صورة الغلاف (اختياري)</label>
+                            {{ form.cover_image }}
+                            {% if restaurant.cover_image %}
+                                <div class="mt-2">
+                                    <small class="text-muted d-block mb-1">الغلاف الحالي:</small>
+                                    <img src="{{ restaurant.cover_image.url }}" alt="Cover" class="img-fluid rounded border" style="max-height: 120px;">
+                                </div>
+                            {% endif %}
+                            {% if form.cover_image.errors %}
+                                <div class="text-danger small">{{ form.cover_image.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Active Toggle -->
+                        <div class="mb-4 p-3 bg-light rounded-3 border">
+                            <div class="form-check form-switch d-flex align-items-center gap-2">
+                                {{ form.is_active }}
+                                <label class="form-check-label fw-bold mb-0" for="id_is_active">
+                                    تفعيل استقبال الطلبات في النظام
+                                </label>
+                            </div>
+                            <div class="form-text small text-muted mt-1">
+                                عند تعطيل هذا الخيار، سيظهر المطعم للكافيهات كـ "مغلق مؤقتاً" ولن يتمكنوا من إرسال طلبات جديدة.
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'restaurant_dashboard' %}" class="btn btn-light border px-4">إلغاء</a>
+                            <button type="submit" class="btn btn-primary px-4 fw-bold">
+                                <i class="bi bi-check-lg me-1"></i> حفظ وتحديث البيانات
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Preview logo immediately upon selection
+    const logoInput = document.getElementById('id_logo');
+    const logoPreview = document.getElementById('logoPreview');
+    const placeholder = document.getElementById('logoPreviewPlaceholder');
+
+    if (logoInput) {
+        logoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    if (placeholder) placeholder.classList.add('d-none');
+                    logoPreview.src = evt.target.result;
+                    logoPreview.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+</script>
+{% endblock %}

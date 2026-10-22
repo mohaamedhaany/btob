@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block title %}تفاصيل الطلب {{ order.order_number }} - {{ cafe.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+    <!-- Top Nav / Back Action -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{% url 'cafe_orders_history' %}" class="btn btn-outline-secondary btn-sm px-3">
+            <i class="bi bi-arrow-right me-1"></i> العودة لسجل الطلبات
+        </a>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-light border btn-sm px-3">
+                <i class="bi bi-printer me-1"></i> طباعة الإيصال
+            </button>
+            <a href="{% url 'cafe_restaurant_menu' order.restaurant.id %}" class="btn btn-primary btn-sm px-3 fw-bold">
+                <i class="bi bi-plus-lg me-1"></i> طلب جديد من هذا المطعم
+            </a>
+        </div>
+    </div>
+
+    <!-- Visual Order Tracking Timeline Stepper -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-geo-alt-fill text-primary me-1"></i> تتبع مسار الطلب
+                </h5>
+                <span class="badge {{ order.status_badge_class }} py-2 px-3 rounded-pill fs-6 fw-bold">
+                    الحالة الحالية: {{ order.get_status_display }}
+                </span>
+            </div>
+
+            {% if order.status != 'CANCELLED' %}
+                <div class="position-relative m-4">
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-primary" role="progressbar" 
+                             style="width: {% if order.status == 'PENDING' %}10%{% elif order.status == 'ACCEPTED' %}50%{% elif order.status == 'READY' %}85%{% elif order.status == 'COMPLETED' %}100%{% endif %};" 
+                             aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between position-absolute top-50 start-0 w-100 translate-middle-y">
+                        <!-- Step 1: Pending -->
+                        <div class="text-center" style="width: 80px; margin-right: -40px;">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 {% if order.status in 'PENDING,ACCEPTED,READY,COMPLETED' %}bg-primary text-white shadow{% else %}bg-light text-muted border{% endif %}" style="width: 38px; height: 38px;">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <span class="small fw-bold d-block text-dark">تم الإرسال</span>
+                        </div>
+
+                        <!-- Step 2: Accepted / Preparing -->
+                        <div class="text-center" style="width: 80px;">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 {% if order.status in 'ACCEPTED,READY,COMPLETED' %}bg-primary text-white shadow{% else %}bg-white text-muted border{% endif %}" style="width: 38px; height: 38px;">
+                                <i class="bi bi-fire"></i>
+                            </div>
+                            <span class="small fw-bold d-block text-dark">قيد التحضير</span>
+                        </div>
+
+                        <!-- Step 3: Ready -->
+                        <div class="text-center" style="width: 80px;">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 {% if order.status in 'READY,COMPLETED' %}bg-primary text-white shadow{% else %}bg-white text-muted border{% endif %}" style="width: 38px; height: 38px;">
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                            <span class="small fw-bold d-block text-dark">جاهز للاستلام</span>
+                        </div>
+
+                        <!-- Step 4: Completed -->
+                        <div class="text-center" style="width: 80px; margin-left: -40px;">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 {% if order.status == 'COMPLETED' %}bg-success text-white shadow{% else %}bg-white text-muted border{% endif %}" style="width: 38px; height: 38px;">
+                                <i class="bi bi-check2-all"></i>
+                            </div>
+                            <span class="small fw-bold d-block text-dark">تم التسليم</span>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-danger mb-0 mt-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-x-circle-fill fs-4"></i>
+                    <div>
+                        <strong>تم إلغاء هذا الطلب من قبل المطعم أو الإدارة.</strong>
+                        <div class="small">يرجى التواصل مع المطعم في حال وجود أي استفسار.</div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Receipt / Order Details Card -->
+    <div class="row g-4">
+        <!-- Order Breakdown Table (8 Cols) -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-receipt-cutoff text-primary me-2"></i> تفاصيل الأصناف المطلوبة
+                    </h5>
+                    <span class="text-muted small">رقم الفاتورة: <strong>{{ order.order_number }}</strong></span>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>الصنف</th>
+                                    <th class="text-center">السعر</th>
+                                    <th class="text-center">الكمية</th>
+                                    <th class="text-end">المجموع</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items.all %}
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold text-dark">{{ item.item_name }}</div>
+                                            {% if item.notes %}
+                                                <small class="text-muted d-block">
+                                                    <i class="bi bi-chat-dots me-1 text-primary"></i> ملاحظات: {{ item.notes }}
+                                                </small>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">{{ item.unit_price }} ر.س</td>
+                                        <td class="text-center">
+                                            <span class="badge bg-secondary-subtle text-dark px-2.5 py-1.5">{{ item.quantity }}</span>
+                                        </td>
+                                        <td class="text-end fw-bold text-dark">{{ item.subtotal }} ر.س</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="3" class="fw-bold fs-6">المبلغ الإجمالي النهائي:</td>
+                                    <td class="text-end fw-black fs-5 text-success">{{ order.total_price }} ر.س</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                {% if order.customer_notes %}
+                    <div class="card-footer bg-white border-top p-3">
+                        <div class="small fw-bold text-dark mb-1">
+                            <i class="bi bi-stickies text-warning me-1"></i> ملاحظات الكافيه على الطلب:
+                        </div>
+                        <p class="mb-0 text-muted small">{{ order.customer_notes }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Restaurant & Cafe Information (4 Cols) -->
+        <div class="col-lg-4">
+            <!-- Restaurant Info Card -->
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-shop text-primary me-2"></i> بيانات المطعم المجهز
+                    </h6>
+                </div>
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        {% if order.restaurant.logo %}
+                            <img src="{{ order.restaurant.logo.url }}" alt="{{ order.restaurant.name }}" class="rounded-circle border" style="width: 50px; height: 50px; object-fit: cover;">
+                        {% else %}
+                            <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center text-primary" style="width: 50px; height: 50px;">
+                                <i class="bi bi-shop fs-4"></i>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark">{{ order.restaurant.name }}</h6>
+                            <small class="text-muted">{{ order.restaurant.address }}</small>
+                        </div>
+                    </div>
+                    {% if order.restaurant.phone %}
+                        <a href="tel:{{ order.restaurant.phone }}" class="btn btn-outline-success btn-sm w-100">
+                            <i class="bi bi-telephone-fill me-1"></i> اتصال بالمطعم: {{ order.restaurant.phone }}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Cafe & Order Target Info -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-info-circle text-primary me-2"></i> معلومات الاستلام
+                    </h6>
+                </div>
+                <div class="card-body p-3 small">
+                    <div class="mb-2">
+                        <span class="text-muted d-block">الكافيه الطالب:</span>
+                        <strong class="text-dark">{{ order.cafe.name }}</strong>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-muted d-block">المرجع / الطاولة:</span>
+                        <strong class="text-primary">{{ order.table_or_customer|default:"غير محدد" }}</strong>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-muted d-block">تاريخ ووقت الإنشاء:</span>
+                        <span class="text-dark">{{ order.created_at|date:"Y-m-d h:i A" }}</span>
+                    </div>
+                    <div>
+                        <span class="text-muted d-block">آخر تحديث:</span>
+                        <span class="text-dark">{{ order.updated_at|date:"Y-m-d h:i A" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

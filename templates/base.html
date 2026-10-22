@@ -1,0 +1,287 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}منصة B2B لطلبات المقاهي والمطاعم{% endblock %}</title>
+    
+    <!-- Google Fonts: Cairo (مع Fallback لخطوط النظام العربية) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Local Vendor: Bootstrap 5.3.3 RTL -->
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.rtl.min.css' %}">
+    
+    <!-- CDN Fallback for Bootstrap RTL in case static isn't collected -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    
+    <!-- Local Vendor: Bootstrap Icons -->
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/bootstrap-icons.min.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Global Custom Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        /* Fallback Styles in case external files are blocked */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #475569;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --bg-light: #f8fafc;
+            --card-border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Cairo', system-ui, -apple-system, 'Segoe UI', Tahoma, Arial, sans-serif !important;
+            background-color: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .navbar-brand-b2b {
+            font-weight: 800;
+            font-size: 1.35rem;
+            color: #0f172a !important;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+
+        .navbar-brand-b2b span {
+            color: var(--primary-color);
+        }
+
+        .nav-link {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #475569;
+            padding: 0.5rem 0.9rem !important;
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color) !important;
+            background-color: #eff6ff;
+        }
+
+        .card {
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background-color: #ffffff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.5rem 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #ffffff !important;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .badge-role {
+            font-size: 0.78rem;
+            padding: 0.35rem 0.65rem;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .content-wrapper {
+            flex: 1 0 auto;
+        }
+
+        .footer {
+            flex-shrink: 0;
+            background-color: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            padding: 1.5rem 0;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        /* Pulse animation for live orders badge */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(0.95); opacity: 1; }
+        }
+        .pulse {
+            animation: pulse-ring 2s infinite ease-in-out;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top py-2.5">
+        <div class="container">
+            <a class="navbar-brand navbar-brand-b2b d-flex align-items-center gap-2" href="{% url 'dashboard_redirect' %}">
+                <i class="bi bi-box-seam-fill text-primary fs-3"></i>
+                <span>B2B</span> فود كونكت
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
+                    {% if user.is_authenticated %}
+                        {% if user.is_restaurant or user.is_superuser %}
+                            <!-- Restaurant Links -->
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'restaurant_dashboard' %}active{% endif %}" href="{% url 'restaurant_dashboard' %}">
+                                    <i class="bi bi-speedometer2 me-1"></i> لوحة تحكم المطعم
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if 'orders' in request.resolver_match.url_name and 'restaurant' in request.path %}active{% endif %}" href="{% url 'restaurant_orders' %}">
+                                    <i class="bi bi-bell-fill me-1 text-warning"></i> شاشة الطلبات الحية
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if 'menu' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'restaurant_menu_list' %}">
+                                    <i class="bi bi-card-list me-1"></i> قائمة الطعام
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if 'categories' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'restaurant_categories' %}">
+                                    <i class="bi bi-tags me-1"></i> الفئات والتصنيفات
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if 'profile' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'restaurant_profile' %}">
+                                    <i class="bi bi-shop me-1"></i> بيانات المطعم والشعار
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% if user.is_cafe or user.is_superuser %}
+                            <!-- Cafe Links -->
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'cafe_dashboard' %}active{% endif %}" href="{% url 'cafe_dashboard' %}">
+                                    <i class="bi bi-grid-fill me-1"></i> استعراض المطاعم
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if 'orders' in request.resolver_match.url_name and 'cafe' in request.path %}active{% endif %}" href="{% url 'cafe_orders_history' %}">
+                                    <i class="bi bi-clock-history me-1"></i> سجل طلباتي
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+
+                <!-- User Profile / Auth Area -->
+                <div class="d-flex align-items-center gap-3">
+                    {% if user.is_authenticated %}
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="text-start">
+                                <span class="d-block fw-bold text-dark lh-1" style="font-size: 0.95rem;">
+                                    {{ user.get_full_name|default:user.username }}
+                                </span>
+                                <small class="text-muted" style="font-size: 0.78rem;">
+                                    {% if user.is_superuser %}
+                                        <span class="badge bg-danger-subtle text-danger badge-role">مشرف عام</span>
+                                    {% elif user.is_restaurant %}
+                                        <span class="badge bg-primary-subtle text-primary badge-role">مطعم: {{ user.restaurant_name }}</span>
+                                    {% elif user.is_cafe %}
+                                        <span class="badge bg-success-subtle text-success badge-role">كافيه: {{ user.cafe_name }}</span>
+                                    {% endif %}
+                                </small>
+                            </div>
+
+                            {% if user.is_superuser %}
+                                <a href="{% url 'admin:index' %}" class="btn btn-sm btn-outline-secondary" title="لوحة إدارة دجانغو">
+                                    <i class="bi bi-gear-fill"></i> الإدارة
+                                </a>
+                            {% endif %}
+
+                            <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-danger" title="تسجيل الخروج">
+                                <i class="bi bi-box-arrow-left"></i> خروج
+                            </a>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-sm px-3">
+                            <i class="bi bi-person-fill me-1"></i> تسجيل الدخول
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Global Flash Messages -->
+    <div class="container mt-3">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm border-0" role="alert">
+                    {% if message.tags == 'success' %}
+                        <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}
+                        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                    {% elif message.tags == 'warning' %}
+                        <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
+                    {% else %}
+                        <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                    {% endif %}
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Main Content Block -->
+    <main class="content-wrapper py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto">
+        <div class="container text-center">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-md-start mb-2 mb-md-0">
+                    <span class="fw-bold text-dark">منظومة B2B للطلبات السريعة بين المقاهي والمطاعم</span> &copy; 2026
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="badge bg-light text-muted border px-2 py-1">
+                        <i class="bi bi-database me-1"></i> متصل بـ Supabase PostgreSQL
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Local Bootstrap Bundle JS + CDN fallback -->
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        if (typeof bootstrap === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"><\/script>');
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

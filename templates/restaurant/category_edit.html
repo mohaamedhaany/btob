@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}تعديل الفئة: {{ category.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-pencil-square text-primary me-2"></i> تعديل الفئة: {{ category.name }}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_name" class="form-label fw-bold">اسم الفئة <span class="text-danger">*</span></label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_icon" class="form-label fw-bold">أيقونة الفئة (Bootstrap Icon)</label>
+                            {{ form.icon }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_order" class="form-label fw-bold">ترتيب الظهور</label>
+                            {{ form.order }}
+                        </div>
+
+                        <div class="mb-4 form-check form-switch">
+                            {{ form.is_active }}
+                            <label class="form-check-label fw-bold" for="id_is_active">تفعيل الفئة</label>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'restaurant_categories' %}" class="btn btn-light border px-3">إلغاء</a>
+                            <button type="submit" class="btn btn-primary px-4 fw-bold">
+                                حفظ التعديلات
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

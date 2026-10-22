@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}شبكة المطاعم الشريكة - {{ cafe.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+    <!-- Hero / Welcome Banner -->
+    <div class="card border-0 bg-primary text-white p-4 p-md-5 mb-4 shadow-sm" style="border-radius: 18px; background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-white text-primary fw-bold px-3 py-2 rounded-pill mb-2">
+                    <i class="bi bi-cup-hot-fill me-1"></i> بوابة طلبات الكافيه B2B
+                </span>
+                <h1 class="fw-black mb-2" style="font-weight: 800;">مرحباً، {{ cafe.name }}</h1>
+                <p class="lead mb-0 text-white-50" style="font-size: 1.1rem;">
+                    اطلب أشهى الوجبات والمشروبات مباشرة من المطاعم الشريكة لزبائنك بأعلى سرعة وأسعار حصرية.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                <a href="{% url 'cafe_orders_history' %}" class="btn btn-light fw-bold px-4 py-2.5 shadow-sm text-primary">
+                    <i class="bi bi-clock-history me-1"></i> تتبع طلباتي السابقة
+                    {% if active_orders_count > 0 %}
+                        <span class="badge bg-danger text-white ms-1">{{ active_orders_count }} جارية</span>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Controls Bar -->
+    <div class="card shadow-sm border-0 mb-4 p-3">
+        <form method="get" class="row g-3 align-items-center">
+            <div class="col-md-8 col-lg-9">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-lg border-start-0 fs-6" placeholder="ابحث باسم المطعم، التخصص، أو الحي...">
+                    <button class="btn btn-primary px-4 fw-bold" type="submit">بحث</button>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3 text-md-end">
+                <span class="text-muted small">
+                    إجمالي المطاعم النشطة: <strong>{{ restaurants.count }}</strong>
+                </span>
+            </div>
+        </form>
+    </div>
+
+    <!-- Restaurant Grid (B2B Directory) -->
+    <div class="row g-4">
+        {% if restaurants %}
+            {% for restaurant in restaurants %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0 overflow-hidden hover-card">
+                        <!-- Cover / Banner -->
+                        <div style="height: 120px; background: {% if restaurant.cover_image %}url('{{ restaurant.cover_image.url }}') center/cover{% else %}linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%){% endif %}; position: relative;">
+                            <span class="badge bg-success position-absolute top-0 end-0 m-3 shadow-sm px-2.5 py-1.5 rounded-pill">
+                                <i class="bi bi-check-circle-fill me-1"></i> يستقبل طلبات
+                            </span>
+                        </div>
+
+                        <!-- Card Body with Overlapping Logo -->
+                        <div class="card-body p-4 pt-0 position-relative">
+                            <div class="d-flex justify-content-between align-items-end mb-3" style="margin-top: -45px;">
+                                {% if restaurant.logo %}
+                                    <img src="{{ restaurant.logo.url }}" alt="{{ restaurant.name }}" class="rounded-circle border border-3 border-white shadow bg-white" style="width: 85px; height: 85px; object-fit: cover;">
+                                {% else %}
+                                    <div class="rounded-circle border border-3 border-white shadow bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 85px; height: 85px;">
+                                        <i class="bi bi-shop fs-1"></i>
+                                    </div>
+                                {% endif %}
+
+                                <span class="badge bg-primary-subtle text-primary border px-2.5 py-1.5 rounded-pill small fw-bold">
+                                    <i class="bi bi-card-checklist me-1"></i> {{ restaurant.items_count }} صنف متاح
+                                </span>
+                            </div>
+
+                            <h4 class="fw-bold mb-1 text-dark">{{ restaurant.name }}</h4>
+                            <p class="text-muted small mb-3 text-truncate-2" style="min-height: 40px;">
+                                {{ restaurant.description|default:"مطعم شريك يقدم مجموعة مميزة من الأصناف الطازجة." }}
+                            </p>
+
+                            <div class="d-flex flex-column gap-1 text-muted small mb-4">
+                                <div>
+                                    <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ restaurant.address|default:"الفرع الرئيسي" }}
+                                </div>
+                                {% if restaurant.phone %}
+                                    <div>
+                                        <i class="bi bi-telephone-fill text-success me-1"></i> {{ restaurant.phone }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <a href="{% url 'cafe_restaurant_menu' restaurant.id %}" class="btn btn-primary w-100 py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                                <span>تصفح قائمة الطعام والطلب</span>
+                                <i class="bi bi-arrow-left"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="card border-0 shadow-sm py-5 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-shop-window fs-1 text-muted"></i>
+                        <h4 class="fw-bold mt-3">لم يتم العثور على أي مطاعم</h4>
+                        <p class="text-muted">تأكد من كتابة الاسم بشكل صحيح أو تواصل مع إدارة النظام لإضافة مطاعم جديدة.</p>
+                        {% if search_query %}
+                            <a href="{% url 'cafe_dashboard' %}" class="btn btn-outline-primary btn-sm px-4">
+                                إلغاء البحث وعرض الكل
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hover-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .hover-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+    }
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}

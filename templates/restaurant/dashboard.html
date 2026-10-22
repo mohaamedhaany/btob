@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}لوحة تحكم المطعم - {{ restaurant.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Welcome Header -->
+    <div class="row align-items-center mb-4">
+        <div class="col-md-7">
+            <div class="d-flex align-items-center gap-3">
+                {% if restaurant.logo %}
+                    <img src="{{ restaurant.logo.url }}" alt="{{ restaurant.name }}" class="rounded-3 border shadow-sm" style="width: 64px; height: 64px; object-fit: cover;">
+                {% else %}
+                    <div class="rounded-3 bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                        <i class="bi bi-shop fs-2"></i>
+                    </div>
+                {% endif %}
+                <div>
+                    <h2 class="fw-bold mb-1">{{ restaurant.name }}</h2>
+                    <p class="text-muted mb-0">
+                        <i class="bi bi-geo-alt me-1"></i> {{ restaurant.address|default:"لم يحدد العنوان بعد" }}
+                        <span class="mx-2">•</span>
+                        {% if restaurant.is_active %}
+                            <span class="badge bg-success-subtle text-success"><i class="bi bi-check-circle me-1"></i> يستقبل طلبات الآن</span>
+                        {% else %}
+                            <span class="badge bg-danger-subtle text-danger"><i class="bi bi-dash-circle me-1"></i> مغلق مؤقتاً</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5 text-md-end mt-3 mt-md-0">
+            <a href="{% url 'restaurant_orders' %}" class="btn btn-warning fw-bold px-3 shadow-sm text-dark me-2">
+                <i class="bi bi-bell-fill me-1"></i> شاشة الطلبات الحية
+                {% if pending_orders_count > 0 %}
+                    <span class="badge bg-danger text-white ms-1">{{ pending_orders_count }}</span>
+                {% endif %}
+            </a>
+            <a href="{% url 'menu_item_create' %}" class="btn btn-primary fw-bold px-3 shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> إضافة صنف جديد
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 border-0 shadow-sm bg-warning-subtle text-warning-emphasis">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small fw-bold text-uppercase">طلبات قيد الانتظار</div>
+                        <h2 class="fw-bold mb-0 mt-1">{{ pending_orders_count }}</h2>
+                    </div>
+                    <div class="bg-warning text-dark p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="bi bi-hourglass-split fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 border-0 shadow-sm bg-primary-subtle text-primary-emphasis">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small fw-bold text-uppercase">قيد التحضير والتجهيز</div>
+                        <h2 class="fw-bold mb-0 mt-1">{{ in_progress_count }}</h2>
+                    </div>
+                    <div class="bg-primary text-white p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="bi bi-fire fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 border-0 shadow-sm bg-success-subtle text-success-emphasis">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small fw-bold text-uppercase">الطلبات المكتملة اليوم</div>
+                        <h2 class="fw-bold mb-0 mt-1">{{ completed_today_count }}</h2>
+                    </div>
+                    <div class="bg-success text-white p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="bi bi-check2-all fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 border-0 shadow-sm bg-secondary-subtle text-secondary-emphasis">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small fw-bold text-uppercase">مبيعات اليوم التقديرية</div>
+                        <h2 class="fw-bold mb-0 mt-1">{{ today_revenue }} <small class="fs-6">ر.س</small></h2>
+                    </div>
+                    <div class="bg-dark text-white p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="bi bi-cash-stack fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation Tiles -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <a href="{% url 'restaurant_menu_list' %}" class="card p-3 text-decoration-none text-dark h-100 hover-shadow border">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 bg-info-subtle text-info rounded-3">
+                        <i class="bi bi-menu-button-wide fs-3"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-1">قائمة الأصناف (المنيو)</h5>
+                        <p class="text-muted small mb-0">{{ total_menu_items }} أصناف مسجلة ومقسمة إلى فئات</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'restaurant_categories' %}" class="card p-3 text-decoration-none text-dark h-100 hover-shadow border">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 bg-warning-subtle text-warning rounded-3">
+                        <i class="bi bi-tags fs-3"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-1">إدارة الفئات والأقسام</h5>
+                        <p class="text-muted small mb-0">تنظيم المشروبات، المأكولات، والحلويات</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'restaurant_profile' %}" class="card p-3 text-decoration-none text-dark h-100 hover-shadow border">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 bg-purple-subtle text-primary rounded-3">
+                        <i class="bi bi-image fs-3"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-1">الشعار والملف التعريفي</h5>
+                        <p class="text-muted small mb-0">تحديث اللوجو، الغلاف، والهاتف والعنوان</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-clock-history me-1 text-primary"></i> آخر الطلبات المستلمة من الكافيهات
+            </h5>
+            <a href="{% url 'restaurant_orders' %}" class="btn btn-sm btn-outline-primary">
+                عرض جميع الطلبات <i class="bi bi-arrow-left ms-1"></i>
+            </a>
+        </div>
+        <div class="card-body p-0">
+            {% if recent_orders %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>رقم الطلب</th>
+                                <th>الكافيه الطالب</th>
+                                <th>المرجع / الطاولة</th>
+                                <th>المبلغ الإجمالي</th>
+                                <th>الحالة</th>
+                                <th>الوقت</th>
+                                <th>الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in recent_orders %}
+                                <tr>
+                                    <td class="fw-bold text-primary">{{ order.order_number }}</td>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ order.cafe.name }}</div>
+                                        <small class="text-muted">{{ order.cafe.phone }}</small>
+                                    </td>
+                                    <td>{{ order.table_or_customer|default:"غير محدد" }}</td>
+                                    <td class="fw-bold">{{ order.total_price }} ر.س</td>
+                                    <td>
+                                        <span class="badge {{ order.status_badge_class }} py-2 px-3 rounded-pill">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="text-muted small">{{ order.created_at|timesince }} مضت</td>
+                                    <td>
+                                        <a href="{% url 'restaurant_orders' %}?status={{ order.status }}" class="btn btn-sm btn-light border">
+                                            معاينة في الشاشة
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                    <p class="text-muted mt-2 mb-0">لا توجد طلبات واردة حتى الآن.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

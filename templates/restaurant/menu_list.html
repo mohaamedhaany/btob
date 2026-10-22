@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}إدارة قائمة الطعام (المنيو) - {{ restaurant.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header with Action -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h3 class="fw-bold mb-1">
+                <i class="bi bi-card-list text-primary me-2"></i> قائمة الطعام (المنيو)
+            </h3>
+            <p class="text-muted small mb-0">عرض وإدارة جميع الأصناف، تعديل الأسعار والصور والتوفر الفوري.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'restaurant_categories' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-tags me-1"></i> إدارة الفئات
+            </a>
+            <a href="{% url 'menu_item_create' %}" class="btn btn-primary fw-bold">
+                <i class="bi bi-plus-circle me-1"></i> إضافة صنف جديد
+            </a>
+        </div>
+    </div>
+
+    <!-- Category Filters and Search Bar -->
+    <div class="card shadow-sm border-0 mb-4 p-3">
+        <div class="row g-3 align-items-center">
+            <!-- Search Input -->
+            <div class="col-md-5">
+                <form method="get" class="d-flex">
+                    {% if selected_category %}
+                        <input type="hidden" name="category" value="{{ selected_category }}">
+                    {% endif %}
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0" placeholder="ابحث باسم الصنف أو الوصف...">
+                        <button class="btn btn-primary" type="submit">بحث</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Categories Pills -->
+            <div class="col-md-7">
+                <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                    <a href="{% url 'restaurant_menu_list' %}" class="btn btn-sm {% if not selected_category %}btn-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+                        الكل ({{ restaurant.menu_items.count }})
+                    </a>
+                    {% for cat in categories %}
+                        <a href="{% url 'restaurant_menu_list' %}?category={{ cat.id }}" class="btn btn-sm {% if selected_category == cat.id|stringformat:'i' %}btn-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+                            <i class="bi {{ cat.icon|default:'bi-tag' }} me-1"></i> {{ cat.name }} ({{ cat.items.count }})
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Items Table / Cards -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            {% if items %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 80px;">الصورة</th>
+                                <th>اسم الصنف</th>
+                                <th>الفئة</th>
+                                <th>السعر</th>
+                                <th>وقت التحضير</th>
+                                <th>التوفر للطلب</th>
+                                <th class="text-end">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                                <tr>
+                                    <td>
+                                        {% if item.image %}
+                                            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="rounded-3 border shadow-sm" style="width: 60px; height: 60px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="rounded-3 bg-light border text-muted d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                                <i class="bi bi-image fs-4"></i>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold fs-6 text-dark">{{ item.name }}</div>
+                                        <small class="text-muted d-inline-block text-truncate" style="max-width: 320px;">
+                                            {{ item.description|default:"لا يوجد وصف" }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="bi {{ item.category.icon|default:'bi-tag' }} me-1"></i> {{ item.category.name }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-success fs-6">{{ item.price }} ر.س</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted small">
+                                            <i class="bi bi-clock me-1"></i> {{ item.preparation_time }} دقيقة
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input availability-toggle" type="checkbox" role="switch" data-id="{{ item.id }}" {% if item.is_available %}checked{% endif %} id="toggle-{{ item.id }}">
+                                            <label class="form-check-label small fw-bold" for="toggle-{{ item.id }}" id="label-{{ item.id }}">
+                                                {% if item.is_available %}<span class="text-success">متوفر</span>{% else %}<span class="text-danger">غير متوفر</span>{% endif %}
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'menu_item_edit' item.id %}" class="btn btn-sm btn-light border text-primary" title="تعديل الصنف">
+                                            <i class="bi bi-pencil-fill"></i> تعديل
+                                        </a>
+                                        <form action="{% url 'menu_item_delete' item.id %}" method="post" class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف الصنف {{ item.name }}؟');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-light border text-danger" title="حذف">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-card-list fs-1 text-muted"></i>
+                    <h5 class="fw-bold mt-2">لا توجد أصناف تطابق البحث</h5>
+                    <p class="text-muted small">قم بإضافة أصناف جديدة أو اختر فئة أخرى.</p>
+                    <a href="{% url 'menu_item_create' %}" class="btn btn-primary btn-sm px-3 mt-2">
+                        <i class="bi bi-plus-lg me-1"></i> إضافة صنف جديد
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // AJAX toggle for item availability
+    document.querySelectorAll('.availability-toggle').forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const itemId = this.getAttribute('data-id');
+            const label = document.getElementById(`label-${itemId}`);
+            
+            fetch(`/restaurant/menu/${itemId}/toggle/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.is_available) {
+                        label.innerHTML = '<span class="text-success">متوفر</span>';
+                    } else {
+                        label.innerHTML = '<span class="text-danger">غير متوفر</span>';
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Error toggling availability:', err);
+                // revert toggle
+                this.checked = !this.checked;
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}إدارة فئات القائمة - {{ restaurant.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row g-4">
+        <!-- New Category Form (Side Card) -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 85px;">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-folder-plus text-primary me-2"></i> إضافة فئة جديدة
+                    </h5>
+                </div>
+                <div class="card-body p-3">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_name" class="form-label fw-bold">اسم الفئة / التصنيف <span class="text-danger">*</span></label>
+                            {{ form.name }}
+                            <div class="form-text small text-muted">مثال: مشويات، وجبات سريعة، مشروبات ساخنة، مقبلات</div>
+                            {% if form.name.errors %}
+                                <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_icon" class="form-label fw-bold">أيقونة التصنيف (اختياري)</label>
+                            {{ form.icon }}
+                            <div class="form-text small text-muted">رمز أيقونة مثل: bi-fire, bi-cup-hot, bi-egg-fried</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_order" class="form-label fw-bold">ترتيب الظهور في القائمة</label>
+                            {{ form.order }}
+                            <div class="form-text small text-muted">الأصغر يظهر أولاً (0, 1, 2...)</div>
+                        </div>
+
+                        <div class="mb-3 form-check form-switch">
+                            {{ form.is_active }}
+                            <label class="form-check-label fw-bold" for="id_is_active">تفعيل الفئة في القائمة</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 fw-bold">
+                            <i class="bi bi-plus-lg me-1"></i> إضافة الفئة
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories List -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-tags text-primary me-2"></i> فئات قائمة الطعام الحالية ({{ categories.count }})
+                    </h5>
+                    <a href="{% url 'menu_item_create' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة صنف جديد
+                    </a>
+                </div>
+
+                <div class="card-body p-0">
+                    {% if categories %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50px;">الترتيب</th>
+                                        <th>اسم الفئة</th>
+                                        <th>الأصناف التابعة</th>
+                                        <th>الحالة</th>
+                                        <th class="text-end">الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for cat in categories %}
+                                        <tr>
+                                            <td class="text-center fw-bold text-muted">{{ cat.order }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="p-2 bg-light rounded text-primary">
+                                                        <i class="bi {{ cat.icon|default:'bi-tag' }} fs-5"></i>
+                                                    </div>
+                                                    <div>
+                                                        <span class="fw-bold fs-6">{{ cat.name }}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'restaurant_menu_list' %}?category={{ cat.id }}" class="badge bg-secondary-subtle text-secondary text-decoration-none">
+                                                    {{ cat.items_count }} أصناف
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {% if cat.is_active %}
+                                                    <span class="badge bg-success-subtle text-success">نشطة</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary-subtle text-muted">معطلة</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="{% url 'category_edit' cat.id %}" class="btn btn-sm btn-light border text-primary" title="تعديل">
+                                                    <i class="bi bi-pencil-fill"></i>
+                                                </a>
+                                                <form action="{% url 'category_delete' cat.id %}" method="post" class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذه الفئة وجميع الأصناف المرتبطة بها؟');">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-light border text-danger" title="حذف">
+                                                        <i class="bi bi-trash-fill"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-tags fs-1 text-muted"></i>
+                            <h6 class="fw-bold mt-2">لا توجد فئات حتى الآن</h6>
+                            <p class="text-muted small">قم بإضافة أول فئة (مثل: وجبات رئيسية، مشروبات) لتتمكن من إضافة الأصناف إليها.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

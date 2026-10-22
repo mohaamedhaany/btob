@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - {{ restaurant.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-egg-fried text-primary me-2"></i> {{ title }}
+                    </h5>
+                    <a href="{% url 'restaurant_menu_list' %}" class="btn btn-sm btn-light border">
+                        <i class="bi bi-arrow-right me-1"></i> العودة للقائمة
+                    </a>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="id_category" class="form-label fw-bold">الفئة / القسم <span class="text-danger">*</span></label>
+                                {{ form.category }}
+                                {% if form.category.errors %}
+                                    <div class="text-danger small">{{ form.category.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text small">
+                                    <a href="{% url 'restaurant_categories' %}" target="_blank" class="text-decoration-none">
+                                        <i class="bi bi-plus-circle me-1"></i> إضافة فئة جديدة غير موجودة
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_name" class="form-label fw-bold">اسم الصنف <span class="text-danger">*</span></label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label fw-bold">وصف الصنف والمكونات</label>
+                            {{ form.description }}
+                            <div class="form-text small text-muted">مثال: لحم بقري أنجوس طازج، جبن شيدر ذائب، صوص خاص، خبز بريوش محمص.</div>
+                            {% if form.description.errors %}
+                                <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="id_price" class="form-label fw-bold">السعر (ر.س) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    {{ form.price }}
+                                    <span class="input-group-text bg-light">ر.س</span>
+                                </div>
+                                {% if form.price.errors %}
+                                    <div class="text-danger small">{{ form.price.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="id_preparation_time" class="form-label fw-bold">وقت التحضير التقريبي (دقيقة)</label>
+                                <div class="input-group">
+                                    {{ form.preparation_time }}
+                                    <span class="input-group-text bg-light">دقيقة</span>
+                                </div>
+                                {% if form.preparation_time.errors %}
+                                    <div class="text-danger small">{{ form.preparation_time.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Image Upload & Preview -->
+                        <div class="mb-4 p-3 bg-light rounded-3 border">
+                            <div class="row align-items-center">
+                                <div class="col-md-3 text-center mb-3 mb-md-0">
+                                    {% if item and item.image %}
+                                        <img src="{{ item.image.url }}" id="itemImgPreview" alt="{{ item.name }}" class="rounded-3 shadow-sm border" style="width: 100px; height: 100px; object-fit: cover;">
+                                    {% else %}
+                                        <div id="itemImgPlaceholder" class="rounded-3 bg-white text-muted border shadow-sm d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                            <i class="bi bi-image fs-1"></i>
+                                        </div>
+                                        <img id="itemImgPreview" src="" alt="Preview" class="rounded-3 shadow-sm border d-none" style="width: 100px; height: 100px; object-fit: cover;">
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-9">
+                                    <label for="id_image" class="form-label fw-bold">صورة الصنف (اختياري)</label>
+                                    {{ form.image }}
+                                    <div class="form-text small text-muted">صورة واضحة وجذابة للصنف لتشجيع زبائن الكافيه على الطلب.</div>
+                                    {% if form.image.errors %}
+                                        <div class="text-danger small">{{ form.image.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 form-check form-switch p-3 bg-light rounded-3 border">
+                            <div class="ms-4">
+                                {{ form.is_available }}
+                                <label class="form-check-label fw-bold" for="id_is_available">متاح للطلب الآن في القائمة</label>
+                                <div class="form-text small text-muted">يمكنك إيقاف إتاحته مؤقتاً في أي وقت إذا نفدت الكمية.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'restaurant_menu_list' %}" class="btn btn-light border px-4">إلغاء</a>
+                            <button type="submit" class="btn btn-primary px-4 fw-bold">
+                                <i class="bi bi-check-lg me-1"></i> {{ button_text }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const imageInput = document.getElementById('id_image');
+    const imagePreview = document.getElementById('itemImgPreview');
+    const placeholder = document.getElementById('itemImgPlaceholder');
+
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    if (placeholder) placeholder.classList.add('d-none');
+                    imagePreview.src = evt.target.result;
+                    imagePreview.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+</script>
+{% endblock %}
